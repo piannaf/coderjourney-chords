@@ -12,5 +12,6 @@ const config = {
 
 const app = firebase.initializeApp(config)
 const base = Rebase.createClass(app.database())
+const twitterProvider = new firebase.auth.TwitterAuthProvider()
 
-export { base }
+export { app, base, twitterProvider }
