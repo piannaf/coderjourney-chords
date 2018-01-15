@@ -27,12 +27,13 @@ class Login extends Component {
 
   authWithTwitter() {
     app.auth().signInWithPopup(twitterProvider)
-      .then((result, error) => {
+      .then((user, error) => {
         if (error) {
           this.toaster.show({
             intent: Intent.DANGER,
             message: "Unable to sign in with Twitter"})
         } else {
+          this.props.setCurrentUser(user)
           this.setState({ redirect: true })
         }
       })
@@ -46,10 +47,10 @@ class Login extends Component {
 
     app.auth().fetchProvidersForEmail(email)
       .then((providers) => {
-        console.log("authWithEmailPassword: " + providers)
         if (providers.length === 0) {
           return app.auth().createUserWithEmailAndPassword(email, password)
         } else if (providers.indexOf("password") === -1) {
+          this.loginForm.reset()
           this.toaster.show({
             intent: Intent.WARNING,
             message: "Try alternative login."
@@ -59,14 +60,13 @@ class Login extends Component {
         }
       })
       .then((user) => {
-        console.log("authWithEmailPassword: user")
         if (user && user.email) {
           this.loginForm.reset()
+          this.props.setCurrentUser(user)
           this.setState({ redirect: true })
         }
       })
       .catch((error) => {
-        console.log("authWithEmailPassword: error")
         this.toaster.show({ intent: Intent.DANGER, message: error.message })
       })
   }
